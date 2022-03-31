@@ -46,6 +46,7 @@ app.get('/api/hello', function (req, res) {
 // Should redirect to the actual link
 // Do necessary checks
 app.get('/api/shorturl/:urlId', (req, res) => {
+  console.log(req.params);
   const short_url = req.params?.urlId;
   if (short_url) {
     ShortUrl.find({ short_url: short_url }, (err, urlData) => {
