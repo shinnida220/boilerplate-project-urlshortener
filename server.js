@@ -49,17 +49,21 @@ app.get('/api/shorturl/:urlId', (req, res) => {
   console.log(req.params);
   const short_url = req.params?.urlId;
   if (short_url) {
-    ShortUrl.find({ short_url: short_url }, (err, urlData) => {
+    ShortUrl.findOne({ short_url: Number(short_url) }, (err, urlData) => {
       if (err) {
-        res.json({ error: "No short URL found for the given input" });
+        res.json({ error: "An error occured" });
         res.end();
       }
 
-      // Return a redirect
-      res.json(urlData);
+      if (urlData?.url !== undefined) {
+        // Return a redirect
+        res.redirect(urlData.url); res.end();
+      } else {
+        res.json({ error: "No short URL found for the given input" });
+      }
     });
   } else {
-    res.json({ error: "No short URL found for the given input" })
+    res.json({ error: "No short URL found for the given input" });
   }
 });
 
