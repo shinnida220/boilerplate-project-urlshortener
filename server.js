@@ -66,46 +66,49 @@ app.get('/api/shorturl/:urlId', (req, res) => {
 app.post('/api/shorturl', (req, res) => {
   const submittedUrl = req.body?.url;
   if (submittedUrl) {
-    const parsedUrl = new url.URL(submittedUrl);
+    try {
+      const parsedUrl = new url.URL(submittedUrl);
 
-    if (parsedUrl?.hostname !== undefined) {
-      dns.lookup(parsedUrl.hostname, (err, _) => {
-        // Dns lookup failed
-        if (err) {
-          res.json({ error: "Invalid URL" });
-          res.end();
-        }
-
-        // Count the number of records we already have..
-        ShortUrl.find().count((er, totalRecords) => {
-          // We couldn't count, should happen, but it happened..
-          if (er) {
-            res.json({ error: "Please try again a bit later" });
+      if (parsedUrl?.hostname !== undefined) {
+        dns.lookup(parsedUrl.hostname, (err, _) => {
+          // Dns lookup failed
+          if (err) {
+            res.json({ error: "Invalid URL" });
             res.end();
           }
 
-          new ShortUrl({
-            url: submittedUrl,
-            shor_url: (totalRecords + 1),
-          }).save((e, urlData) => {
-            if (e) {
-              res.json({ error: e });
+          // Count the number of records we already have..
+          ShortUrl.find().count((er, totalRecords) => {
+            // We couldn't count, should happen, but it happened..
+            if (er) {
+              res.json({ error: "Please try again a bit later" });
               res.end();
             }
 
-            // Finally a response
-            res.json({
-              original_url: submittedUrl, short_url: urlData.shor_url
-            });
-          });
-        })
+            new ShortUrl({
+              url: submittedUrl,
+              shor_url: (totalRecords + 1),
+            }).save((e, urlData) => {
+              if (e) {
+                res.json({ error: e });
+                res.end();
+              }
 
-      });
-    } else {
-      // We couldn't parse the url..
+              // Finally a response
+              res.json({
+                original_url: submittedUrl, short_url: urlData.shor_url
+              });
+            });
+          })
+
+        });
+      } else {
+        // We couldn't parse the url..
+        res.json({ error: "Invalid URL" });
+      }
+    } catch (allErr) {
       res.json({ error: "Invalid URL" });
     }
-
   } else {
     // nothing was submitted
     res.json({ error: "Invalid URL" });
