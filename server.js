@@ -87,7 +87,7 @@ app.post('/api/shorturl', (req, res) => {
 
             new ShortUrl({
               url: submittedUrl,
-              shor_url: (totalRecords + 1),
+              short_url: (totalRecords + 1),
             }).save((e, urlData) => {
               if (e) {
                 res.json({ error: e });
@@ -96,7 +96,7 @@ app.post('/api/shorturl', (req, res) => {
 
               // Finally a response
               res.json({
-                original_url: submittedUrl, short_url: urlData.shor_url
+                original_url: submittedUrl, short_url: urlData.short_url
               });
             });
           })
