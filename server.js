@@ -56,7 +56,7 @@ app.get('/api/shorturl/:urlId', (req, res) => {
       }
 
       // Return a redirect
-      res.redirect(urlData.url);
+      res.json(urlData);
     });
   } else {
     res.json({ error: "No short URL found for the given input" })
@@ -79,7 +79,7 @@ app.post('/api/shorturl', (req, res) => {
           }
 
           // Count the number of records we already have..
-          ShortUrl.find().count((er, totalRecords) => {
+          ShortUrl.countDocuments({}, (er, totalRecords) => {
             // We couldn't count, should happen, but it happened..
             if (er) {
               res.json({ error: "Please try again a bit later" });
