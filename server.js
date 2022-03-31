@@ -63,7 +63,7 @@ app.get('/api/shorturl/:urlId', (req, res) => {
 });
 
 // To create the actual link
-app.post((req, res) => {
+app.post('/api/shorturl', (req, res) => {
   const submittedUrl = req.body?.url;
   if (submittedUrl) {
     const parsedUrl = new url.URL(submittedUrl);
